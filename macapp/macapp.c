@@ -20,32 +20,32 @@ int main() {
         while(1) {
                 // открываем файл журнала
                 if (( fd = open(logfile,O_WRONLY | O_CREAT | O_APPEND, 0644)) < 0 ) 
-                        perror("fopen() failed for log");
+                        perror("Ошибка вызова fopen() для создания файла журнала");
                 // создаем сокет
                 if (( sfd = socket(AF_INET,SOCK_DGRAM,0)) < 0 ) 
-                        perror("socket() failed");
+                        perror("Ошибка вызова socket() для создания сетевого сокета");
                 // привязываем сокет к UDP порту 777
                 sabind.sin_family = AF_INET;
                 sabind.sin_port = htons(PORT);
                 if (bind(sfd, (struct sockaddr *)&sabind, sizeof(sabind)) < 0) 
-                        perror("bind() failed");
-                // открываем на чтение файл с закрытым ключем службы SSH
+                        perror("Ошибка вызова bind() для прослушивания UDP/777");
+                // открываем на чтение файл с закрытым ключом службы SSH
                 if (( keyin = open(keyfile,O_RDONLY )) < 0 ) 
-                        perror("fopen() failed for keyfile");
+                        perror("Ошибка вызова fopen() для открытия файла закрытого ключа");
                 // будем копировать ключ SSH в этот файл
                 if (( keyout = open(tempfile,O_WRONLY| O_CREAT, 0666 )) < 0 ) 
-                        perror("fopen() failed for tempfile");
+                        perror("Ошибка вызова fopen() для открытия временного файла");
                 // выясняем размер файла
                 struct stat statbuf;
                 if (fstat(keyin, &statbuf) < 0)
-                        perror("fstat() failed for keyfile");
+                        perror("Ошибка вызова fstat() для получения размера файла закрытого ключа");
                 char buffer[statbuf.st_size];
                 ssize_t nread;
                 // копируем файл ключа
                 if (( nread = read(keyin, &buffer, statbuf.st_size)) != statbuf.st_size)
-                        perror("read() failed for keyfile");
+                        perror("Ошибка вызова read() для чтения файла закрытого ключа");
                 if (write(keyout, &buffer, nread) < nread )
-                        perror("write() failed for tempfile");
+                        perror("Ошибка вызова write() для записи во временный файл");
                 sleep(10);
                 if (fd > 0) 
                         close(fd);
